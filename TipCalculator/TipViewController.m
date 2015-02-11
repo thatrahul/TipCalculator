@@ -8,6 +8,8 @@
 
 #import "TipViewController.h"
 #import "SettingsViewController.h"
+#import "TipPercentagesHolder.h"
+#import "TipPreference.h"
 
 @interface TipViewController ()
 - (IBAction)finishEditing:(UITapGestureRecognizer *)sender;
@@ -16,7 +18,8 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tipPercentageControl;
 @property (weak, nonatomic) IBOutlet UILabel *totalLabel;
 @property (weak, nonatomic) IBOutlet UILabel *tipAmountLable;
-@property (strong, nonatomic) NSArray* defaultTipPercentages;
+@property (strong, nonatomic) NSArray* possibleTipPercentages;
+//@property (strong, nonatomic) NSArray* defaultTipPercentages;
 -(void) calculate;
 
 - (IBAction)tipPercentageChanged:(UISegmentedControl *)sender;
@@ -39,27 +42,23 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    _defaultTipPercentages = @[@(10), @(15), @(20)];
     NSLog(@"view will appear");
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString* defaultTipPercentage = [defaults objectForKey:@"kTipPercentage"];
-    NSLog(@"default tip percentage:%@", defaultTipPercentage);
+    id  tipValue = [defaults objectForKey:@"kTipPercentage"];
+    id  possibleValues = [defaults objectForKey:@"kPossibleTipPercentage"];
+    //NSArray* percentages;
+    NSInteger defaultTipPercentage = NSNotFound;
     
-    
-    NSUInteger tipIndex = [self.defaultTipPercentages indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        NSNumber* value = (NSNumber*) obj;
-        if ([value integerValue] == [defaultTipPercentage integerValue]) {
-            *stop = YES;
-            return YES;
-        }
-        return NO;
-    }];
-    
-    if (tipIndex != NSNotFound) {
-        [self.tipPercentageControl setSelectedSegmentIndex:tipIndex];
+    if (possibleValues) {
+        self.possibleTipPercentages = (NSArray*) possibleValues;
+        defaultTipPercentage = [tipValue integerValue];
+    } else {
+        self.possibleTipPercentages = [[TipPercentagesHolder singletonInstance] regularPercentages];
+    }
+    [self setupPercentageSegmentControlWithPercentages:self.possibleTipPercentages selectedValue:defaultTipPercentage];
+    if (self.billTextField) {
         [self calculate];
     }
-    
 }
 
 
@@ -81,10 +80,10 @@
 -(void)calculate {
     float bill = [self.billTextField.text floatValue];
     
-    NSArray* tipPercentages = @[@(10), @(15), @(20)];
+    //NSArray* tipPercentages = @[@(10), @(15), @(20)];
     
     NSInteger tipIndex = [self.tipPercentageControl selectedSegmentIndex];
-    float tipAmount = bill * [tipPercentages[tipIndex] floatValue] /100;
+    float tipAmount = bill * [self.possibleTipPercentages[tipIndex] floatValue] /100;
     self.tipAmountLable.text = [NSString stringWithFormat:@"$ %0.2f",tipAmount];
     float total = bill + tipAmount;
     self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
@@ -103,6 +102,19 @@
 
 -(void) displaySettingsView {
     [self.navigationController pushViewController:[[SettingsViewController alloc] init] animated:YES];
+}
+
+-(void) setupPercentageSegmentControlWithPercentages:(NSArray*) percentages selectedValue:(NSInteger) value {
+    int index = 0;
+    for (id percentage in percentages) {
+        [self.tipPercentageControl setTitle:[NSString stringWithFormat:@"%lu%%", [percentage integerValue]] forSegmentAtIndex:index];
+        
+        if (value != NSNotFound && value == [percentage integerValue]) {
+            [self.tipPercentageControl setSelectedSegmentIndex:index];
+        }
+        index++;
+    }
+    
 }
 
 @end
