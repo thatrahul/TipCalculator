@@ -8,7 +8,7 @@
 
 #import "SettingsViewController.h"
 #import "TipPercentagesHolder.h"
-#import "TipPreference.h"
+
 
 @interface SettingsViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *tipPercentageTextField;
@@ -21,8 +21,8 @@
 - (IBAction)generousModeSwitch:(UISwitch *)sender;
 
 /**
- *  Save the user selected TipPreference.
- *  We use preferences to stop the TipPreference.
+ * Save the user selected TipPreference.
+ * We use preferences to stop the TipPreference.
  */
 -(void) saveSetting;
 
@@ -38,7 +38,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"view will appear");
+    //Read existing setting values
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     id  tipValue = [defaults objectForKey:@"kTipPercentage"];
     id  possibleValues = [defaults objectForKey:@"kPossibleTipPercentage"];
@@ -62,7 +62,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 

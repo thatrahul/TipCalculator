@@ -38,6 +38,7 @@
     return self;
 }
 
+// prevent initialization of other instances
 -(instancetype) init {
     [NSException raise:@"TipPercentagesHolder is a singleton" format:@"Use singletonInstance method"];
     return nil;

@@ -9,17 +9,18 @@
 #import "TipViewController.h"
 #import "SettingsViewController.h"
 #import "TipPercentagesHolder.h"
-#import "TipPreference.h"
 
 @interface TipViewController ()
+
 - (IBAction)finishEditing:(UITapGestureRecognizer *)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *billTextField;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tipPercentageControl;
 @property (weak, nonatomic) IBOutlet UILabel *totalLabel;
-@property (weak, nonatomic) IBOutlet UILabel *tipAmountLable;
+@property (weak, nonatomic) IBOutlet UILabel *tipAmountLabel;
+//property to hold the possible tip percentages. These can vary based on generous mode
 @property (strong, nonatomic) NSArray* possibleTipPercentages;
-//@property (strong, nonatomic) NSArray* defaultTipPercentages;
+
 -(void) calculate;
 
 - (IBAction)tipPercentageChanged:(UISegmentedControl *)sender;
@@ -31,14 +32,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.title = @"Tip Calculator";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(displaySettingsView)];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -46,7 +45,6 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     id  tipValue = [defaults objectForKey:@"kTipPercentage"];
     id  possibleValues = [defaults objectForKey:@"kPossibleTipPercentage"];
-    //NSArray* percentages;
     NSInteger defaultTipPercentage = NSNotFound;
     
     if (possibleValues) {
@@ -56,6 +54,8 @@
         self.possibleTipPercentages = [[TipPercentagesHolder singletonInstance] regularPercentages];
     }
     [self setupPercentageSegmentControlWithPercentages:self.possibleTipPercentages selectedValue:defaultTipPercentage];
+    
+    //if the billTextField is not nil recalculate.
     if (self.billTextField) {
         [self calculate];
     }
@@ -80,16 +80,14 @@
 -(void)calculate {
     float bill = [self.billTextField.text floatValue];
     
-    //NSArray* tipPercentages = @[@(10), @(15), @(20)];
-    
     NSInteger tipIndex = [self.tipPercentageControl selectedSegmentIndex];
     float tipAmount = bill * [self.possibleTipPercentages[tipIndex] floatValue] /100;
-    self.tipAmountLable.text = [NSString stringWithFormat:@"$ %0.2f",tipAmount];
+    self.tipAmountLabel.text = [NSString stringWithFormat:@"$ %0.2f",tipAmount];
     float total = bill + tipAmount;
     self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
     
     NSLocale *theLocale = [NSLocale currentLocale];
-    NSString *symbol = [theLocale objectForKey:NSLocaleCurrencySymbol];
+    //NSString *symbol = [theLocale objectForKey:NSLocaleCurrencySymbol];
     NSString *code = [theLocale objectForKey:NSLocaleCurrencySymbol];
     
     NSLog(@"Currency code:%@", code);
@@ -114,7 +112,6 @@
         }
         index++;
     }
-    
 }
 
 @end

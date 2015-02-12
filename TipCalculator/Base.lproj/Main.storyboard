@@ -72,7 +72,7 @@
                     <navigationItem key="navigationItem" id="Jq1-8Q-OYh"/>
                     <connections>
                         <outlet property="billTextField" destination="YtT-a4-Fh2" id="tMI-Lh-WeL"/>
-                        <outlet property="tipAmountLable" destination="w3f-wF-0K5" id="P7O-SY-inm"/>
+                        <outlet property="tipAmountLabel" destination="w3f-wF-0K5" id="53m-XU-8eZ"/>
                         <outlet property="tipPercentageControl" destination="eEi-Ja-0Fn" id="Z22-d6-hN6"/>
                         <outlet property="totalLabel" destination="Xee-zt-WdL" id="9qU-hy-mTA"/>
                     </connections>
