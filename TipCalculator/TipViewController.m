@@ -84,13 +84,30 @@
     float tipAmount = bill * [self.possibleTipPercentages[tipIndex] floatValue] /100;
     self.tipAmountLabel.text = [NSString stringWithFormat:@"$ %0.2f",tipAmount];
     float total = bill + tipAmount;
-    self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
+    //self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
     
     NSLocale *theLocale = [NSLocale currentLocale];
     //NSString *symbol = [theLocale objectForKey:NSLocaleCurrencySymbol];
     NSString *code = [theLocale objectForKey:NSLocaleCurrencySymbol];
     
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setNumberStyle: NSNumberFormatterCurrencyStyle];
+    [numberFormatter setMinimumFractionDigits:2];
+    [numberFormatter setMaximumFractionDigits:2];
+    [numberFormatter setLocale:theLocale];
+    
+    //NSString *numberAsString = [numberFormatter stringFromNumber:[NSNumber numberWithFloat:total] ];
+    
+    NSString *numberAsString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:total] numberStyle:NSNumberFormatterCurrencyStyle];
+    
+    self.totalLabel.text = numberAsString;
+    
     NSLog(@"Currency code:%@", code);
+    NSLog(@"Currency formatted:%@", numberAsString);
+    for (NSString *identifier in @[@"en_US", @"fr_FR", @"ja_JP"]) {
+        numberFormatter.locale = [NSLocale localeWithLocaleIdentifier:identifier];
+        NSLog(@"%@: %@", identifier, [numberFormatter stringFromNumber:[NSNumber numberWithFloat:total]  ]);
+    }
     
 }
 
