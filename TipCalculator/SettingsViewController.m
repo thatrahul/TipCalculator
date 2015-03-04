@@ -118,7 +118,7 @@
 -(void) setupPercentageSegmentControlWithPercentages:(NSArray*) percentages selectedValue:(NSInteger) value{
     int index = 0;
     for (id percentage in percentages) {
-        [self.settingPercentageSegmentedControl setTitle:[NSString stringWithFormat:@"%lu%%", [percentage integerValue]] forSegmentAtIndex:index];
+        [self.settingPercentageSegmentedControl setTitle:[NSString stringWithFormat:@"%lu%%", (long)[percentage integerValue]] forSegmentAtIndex:index];
         if (value != NSNotFound && value == [percentage integerValue]) {
             [self.settingPercentageSegmentedControl setSelectedSegmentIndex:index];
         }

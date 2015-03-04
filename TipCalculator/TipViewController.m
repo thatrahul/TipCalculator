@@ -42,6 +42,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"view will appear");
+    NSLocale *theLocale = [NSLocale currentLocale];
+    NSLog(@"Current locale:%@", [theLocale objectForKey:NSLocaleIdentifier]);
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     id  tipValue = [defaults objectForKey:@"kTipPercentage"];
     id  possibleValues = [defaults objectForKey:@"kPossibleTipPercentage"];
@@ -84,29 +87,15 @@
     float tipAmount = bill * [self.possibleTipPercentages[tipIndex] floatValue] /100;
     
     float total = bill + tipAmount;
-    //self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
     
-    NSLocale *theLocale = [NSLocale currentLocale];
-    //NSString *symbol = [theLocale objectForKey:NSLocaleCurrencySymbol];
-    NSString *code = [theLocale objectForKey:NSLocaleCurrencySymbol];
+    
+   
     
     NSString *formattedTotal = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:total] numberStyle:NSNumberFormatterCurrencyStyle];
     NSString *formattedTip = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:tipAmount] numberStyle:NSNumberFormatterCurrencyStyle];
     
     self.totalLabel.text = formattedTotal;
     self.tipAmountLabel.text = formattedTip;
-    
-    NSLog(@"Currency code:%@", code);
-    NSLog(@"Currency formatted:%@", formattedTotal);
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    [numberFormatter setNumberStyle: NSNumberFormatterCurrencyStyle];
-    [numberFormatter setMinimumFractionDigits:2];
-    [numberFormatter setMaximumFractionDigits:2];
-
-    for (NSString *identifier in @[@"en_US", @"fr_FR", @"ja_JP"]) {
-        numberFormatter.locale = [NSLocale localeWithLocaleIdentifier:identifier];
-        NSLog(@"%@: %@", identifier, [numberFormatter stringFromNumber:[NSNumber numberWithFloat:total]  ]);
-    }
     
 }
 
@@ -121,7 +110,7 @@
 -(void) setupPercentageSegmentControlWithPercentages:(NSArray*) percentages selectedValue:(NSInteger) value {
     int index = 0;
     for (id percentage in percentages) {
-        [self.tipPercentageControl setTitle:[NSString stringWithFormat:@"%lu%%", [percentage integerValue]] forSegmentAtIndex:index];
+        [self.tipPercentageControl setTitle:[NSString stringWithFormat:@"%lu%%", (long)[percentage integerValue]] forSegmentAtIndex:index];
         
         if (value != NSNotFound && value == [percentage integerValue]) {
             [self.tipPercentageControl setSelectedSegmentIndex:index];
