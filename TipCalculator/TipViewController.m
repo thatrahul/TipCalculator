@@ -8,15 +8,19 @@
 
 #import "TipViewController.h"
 #import "SettingsViewController.h"
+#import "TipPercentagesHolder.h"
 
 @interface TipViewController ()
+
 - (IBAction)finishEditing:(UITapGestureRecognizer *)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *billTextField;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *tipPercentageControl;
 @property (weak, nonatomic) IBOutlet UILabel *totalLabel;
-@property (weak, nonatomic) IBOutlet UILabel *tipAmountLable;
-@property (strong, nonatomic) NSArray* defaultTipPercentages;
+@property (weak, nonatomic) IBOutlet UILabel *tipAmountLabel;
+//property to hold the possible tip percentages. These can vary based on generous mode
+@property (strong, nonatomic) NSArray* possibleTipPercentages;
+
 -(void) calculate;
 
 - (IBAction)tipPercentageChanged:(UISegmentedControl *)sender;
@@ -28,38 +32,36 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.title = @"Tip Calculator";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(displaySettingsView)];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    _defaultTipPercentages = @[@(10), @(15), @(20)];
     NSLog(@"view will appear");
+    NSLocale *theLocale = [NSLocale currentLocale];
+    NSLog(@"Current locale:%@", [theLocale objectForKey:NSLocaleIdentifier]);
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString* defaultTipPercentage = [defaults objectForKey:@"kTipPercentage"];
-    NSLog(@"default tip percentage:%@", defaultTipPercentage);
+    id  tipValue = [defaults objectForKey:@"kTipPercentage"];
+    id  possibleValues = [defaults objectForKey:@"kPossibleTipPercentage"];
+    NSInteger defaultTipPercentage = NSNotFound;
     
+    if (possibleValues) {
+        self.possibleTipPercentages = (NSArray*) possibleValues;
+        defaultTipPercentage = [tipValue integerValue];
+    } else {
+        self.possibleTipPercentages = [[TipPercentagesHolder singletonInstance] regularPercentages];
+    }
+    [self setupPercentageSegmentControlWithPercentages:self.possibleTipPercentages selectedValue:defaultTipPercentage];
     
-    NSUInteger tipIndex = [self.defaultTipPercentages indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        NSNumber* value = (NSNumber*) obj;
-        if ([value integerValue] == [defaultTipPercentage integerValue]) {
-            *stop = YES;
-            return YES;
-        }
-        return NO;
-    }];
-    
-    if (tipIndex != NSNotFound) {
-        [self.tipPercentageControl setSelectedSegmentIndex:tipIndex];
+    //if the billTextField is not nil recalculate.
+    if (self.billTextField) {
         [self calculate];
     }
-    
 }
 
 
@@ -81,19 +83,19 @@
 -(void)calculate {
     float bill = [self.billTextField.text floatValue];
     
-    NSArray* tipPercentages = @[@(10), @(15), @(20)];
-    
     NSInteger tipIndex = [self.tipPercentageControl selectedSegmentIndex];
-    float tipAmount = bill * [tipPercentages[tipIndex] floatValue] /100;
-    self.tipAmountLable.text = [NSString stringWithFormat:@"$ %0.2f",tipAmount];
+    float tipAmount = bill * [self.possibleTipPercentages[tipIndex] floatValue] /100;
+    
     float total = bill + tipAmount;
-    self.totalLabel.text = [NSString stringWithFormat:@"$ %0.2f", total];
     
-    NSLocale *theLocale = [NSLocale currentLocale];
-    NSString *symbol = [theLocale objectForKey:NSLocaleCurrencySymbol];
-    NSString *code = [theLocale objectForKey:NSLocaleCurrencySymbol];
     
-    NSLog(@"Currency code:%@", code);
+   
+    
+    NSString *formattedTotal = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:total] numberStyle:NSNumberFormatterCurrencyStyle];
+    NSString *formattedTip = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:tipAmount] numberStyle:NSNumberFormatterCurrencyStyle];
+    
+    self.totalLabel.text = formattedTotal;
+    self.tipAmountLabel.text = formattedTip;
     
 }
 
@@ -103,6 +105,18 @@
 
 -(void) displaySettingsView {
     [self.navigationController pushViewController:[[SettingsViewController alloc] init] animated:YES];
+}
+
+-(void) setupPercentageSegmentControlWithPercentages:(NSArray*) percentages selectedValue:(NSInteger) value {
+    int index = 0;
+    for (id percentage in percentages) {
+        [self.tipPercentageControl setTitle:[NSString stringWithFormat:@"%lu%%", (long)[percentage integerValue]] forSegmentAtIndex:index];
+        
+        if (value != NSNotFound && value == [percentage integerValue]) {
+            [self.tipPercentageControl setSelectedSegmentIndex:index];
+        }
+        index++;
+    }
 }
 
 @end
