@@ -1,7 +1,7 @@
 # TipCalculator Sample App
 Tip Calculator has been developed using Objective-C. It is a simple application that allows you to enter a bill amount and calculates a tip. TipCalculator has setting view which allows user to:
-## Enable/Disable a Generous Mode
-## Select a default tip percentages. 
+* Enable/Disable a Generous Mode
+* Select a default tip percentages. 
 
 The tip percentages available for selection depend on whether the Generous Mode is turned on or off.
 
