@@ -5,7 +5,7 @@ Tip Calculator has been developed using Objective-C. It is a simple application 
 
 The tip percentages available for selection depend on whether the Generous Mode is turned on or off.
 
-Time spent: 8 hours spent in total
+Time spent: 8 hours
 
 Completed user stories:
 
