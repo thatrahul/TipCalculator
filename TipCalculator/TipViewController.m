@@ -88,9 +88,6 @@
     
     float total = bill + tipAmount;
     
-    
-   
-    
     NSString *formattedTotal = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:total] numberStyle:NSNumberFormatterCurrencyStyle];
     NSString *formattedTip = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithFloat:tipAmount] numberStyle:NSNumberFormatterCurrencyStyle];
     
