@@ -11,7 +11,7 @@ Completed user stories:
 
  * [x] Required: Develop a Tip Calculator App following the online instructions and videos
  * [x] Required: Add a settings view to the Tip Calculator to allow user to chose a default tip percentage. Selected percentage is stored using NSUserDefaults
- * [x] Optional: Use locale specific currency and currency thousands separators. 
+ * [x] Optional: Use locale specific currency and currency thousands separators based on user settings
  * [x] Optional: Add a Generous mode toggle which when turned on increase the tip percentages
  
 Notes:
