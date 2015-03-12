@@ -18,5 +18,5 @@ Notes:
 Time was spent on adding the generous mode and using NSNumberFormatter.
 
 Walkthrough of all user stories:
-
+![Screen Captures] https://github.com/thatrahul/TipCalculator/blob/master/TipCalculatorScreens.gif
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
